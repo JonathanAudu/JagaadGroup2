@@ -1,0 +1,76 @@
+
+body {
+  padding: 20px;
+}
+
+.header {
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px;
+}
+
+.header h1 {
+  text-align: center;
+  margin: 0;
+}
+
+.body-container {
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.slots-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.slot {
+  background-color: #fff;
+  border-radius: 4px;
+  padding: 15px;
+}
+
+.slot:hover {
+  background-color: #dee5ed;
+}
+
+.book-btn {
+  display: block;
+  margin-top: 15px;
+}
+
+body {
+    padding: 20px;
+  }
+
+  h1 {
+    text-align: center;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+
+  th {
+    background-color: #f2f2f2;
+  }
+
+  .action-buttons {
+    display: flex;
+    justify-content: center;
+  }
+
+  .delete-btn,
+  .update-btn {
+    margin-left: 5px;
+  }
