@@ -1,3 +1,39 @@
+<?php 
+function  readFromJson(string $fileName):array{
+  $slots=[];
+  if (file_exists($fileName)) {
+    $json = file_get_contents($fileName);
+    $slots = json_decode($json, true);
+}
+return $slots;
+}
+function addDataTojson(string $fileName, array $data,string $key):void{
+  if(is_writable($fileName)){
+    $slots =json_decode(file_get_contents($fileName),true);
+    $slots[$key]=$data;
+    if(!file_put_contents($fileName, json_encode($slots))){
+      echo "Cannot write to the file!";
+  }
+  }
+}
+
+if(isset($_POST)){
+  if(isset($_POST["add_slot"])&& $_POST["add_slot"]==1){
+    $array=readFromJson("data.json");
+    $slot_id=count($array)?explode('_',end($array)["slot_id"])[1]+1: 1;
+ $slot=[
+   "slot_id"=>"slot_".$slot_id,
+   "slot_name"=>$_POST["slot_name"],
+   "slot_desc"=>$_POST["slot_desc"],
+   "slot_date"=>$_POST["slot_date"],
+ ];
+ if(!empty($_POST["slot_name"])&&!empty($_POST["slot_desc"])&&!empty($_POST["slot_date"]))
+ addDataTojson("data.json",$slot,"slot_$slot_id");
+
+}
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -17,20 +53,20 @@
   </div>
   <div class="container body-container">
     <h3 class="text-center">Available Slots</h3>
-    <form>
+    <form  action method="post">
       <div class="mb-3">
         <label for="name" class="form-label">Slot Name</label>
-        <input type="text" class="form-control" name="Slotname" id="name" required>
+        <input type="text" class="form-control" name="slot_name" id="name" required>
       </div>
       <div class="mb-3">
         <label for="name" class="form-label">Slot Description</label>
-        <input type="text" class="form-control" name="Slot_Desc" id="name" required>
+        <input type="text" class="form-control" name="slot_desc" id="name" required>
       </div>
       <div class="mb-3">
         <label for="date">Available Date:</label>
-        <input type="date" id="date" name="date" class="form-control" required>
+        <input type="date" id="date" name="slot_date" class="form-control" required>
       </div>
-      <button type="submit" class="btn btn-primary">Add Slot</button>
+      <button type="submit" name="add_slot" value=1 class="btn btn-primary">Add Slot</button>
     </form>
   </div>
   
