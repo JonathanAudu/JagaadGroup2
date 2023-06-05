@@ -1,3 +1,14 @@
+<?php
+function  readFromJson(string $fileName):array{
+    $slots=[];
+    if (file_exists($fileName)) {
+      $json = file_get_contents($fileName);
+      $slots = json_decode($json, true);
+  }
+  return $slots;
+  }
+  $slots=readFromJson("data.json");
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -20,59 +31,17 @@
         <h2 class="text-center">Available Slots</h2>
 
         <div class="slots-container">
-        <form action="">
+            <?php  foreach($slots as $slot ){?>
+                <form action="">
             <div class="slot">
-                <h3>Slot 1</h3>
-                <p>Slot 1 description goes here.</p>
-                <p>Avalaible till : dd/mm/yy</p>
+                <h3><?php echo $slot["slot_name"]?></h3>
+                <p><?php echo $slot["slot_desc"]?></p>
+                <p>Avalaible till : <?php echo $slot["slot_date"]?></p>
                 <button type="submit" name="book-slot" class="btn btn-primary book-btn">Book a Slot</button>
             </div>
             </form>
-
-            <form action="">
-            <div class="slot">
-                <h3>Slot 1</h3>
-                <p>Slot 1 description goes here.</p>
-                <p>Avalaible till : dd/mm/yy</p>
-                <button type="submit" name="book-slot" class="btn btn-primary book-btn">Book a Slot</button>
-            </div>
-            </form>
-
-            <form action="">
-            <div class="slot">
-                <h3>Slot 1</h3>
-                <p>Slot 1 description goes here.</p>
-                <p>Avalaible till : dd/mm/yy</p>
-                <button type="submit" name="book-slot" class="btn btn-primary book-btn">Book a Slot</button>
-            </div>
-            </form>
-
-            <form action="">
-            <div class="slot">
-                <h3>Slot 1</h3>
-                <p>Slot 1 description goes here.</p>
-                <p>Avalaible till : dd/mm/yy</p>
-                <button type="submit" name="book-slot" class="btn btn-primary book-btn">Book a Slot</button>
-            </div>
-            </form>
-
-            <form action="">
-            <div class="slot">
-                <h3>Slot 1</h3>
-                <p>Slot 1 description goes here.</p>
-                <p>Avalaible till : dd/mm/yy</p>
-                <button type="submit" name="book-slot" class="btn btn-primary book-btn">Book a Slot</button>
-            </div>
-            </form>
-
-            <form action="">
-            <div class="slot">
-                <h3>Slot 1</h3>
-                <p>Slot 1 description goes here.</p>
-                <p>Avalaible till : dd/mm/yy</p>
-                <button type="submit" name="book-slot" class="btn btn-primary book-btn">Book a Slot</button>
-            </div>
-            </form>
+            <?php }?>
+        
 
             <!-- Add more slots here as needed -->
         </div>

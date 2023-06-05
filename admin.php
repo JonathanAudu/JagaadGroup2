@@ -32,7 +32,6 @@ if(isset($_POST)){
 
 }
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -55,11 +54,11 @@ if(isset($_POST)){
     <h3 class="text-center">Available Slots</h3>
     <form  action method="post">
       <div class="mb-3">
-        <label for="name" class="form-label">Slot Name</label>
+        <label for="name" class="form-label">Check Name</label>
         <input type="text" class="form-control" name="slot_name" id="name" required>
       </div>
       <div class="mb-3">
-        <label for="name" class="form-label">Slot Description</label>
+        <label for="name" class="form-label">Check Description</label>
         <input type="text" class="form-control" name="slot_desc" id="name" required>
       </div>
       <div class="mb-3">
