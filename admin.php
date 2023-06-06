@@ -1,4 +1,13 @@
 <?php 
+
+
+session_start();
+
+if(!isset($_SESSION['userLoggedIn'])){
+    echo '<meta http-equiv="refresh" content="0; url=\'login.php\'" />';
+}
+
+
 function  readFromJson(string $fileName):array{
   $slots=[];
   if (file_exists($fileName)) {
@@ -51,6 +60,16 @@ if(isset($_POST)){
     <h1>HOTEL BOOKING SYSTEM ADMIN</h1>
   </div>
   <div class="container body-container">
+  <ul>
+      <li> <?php if(!isset($_SESSION['userLoggedIn'])){ ?>
+                <li class="nav-item">
+                    <a class="nav-link " href="signin.php">Sign-in</a>
+                </li>
+            <?php }?></li>
+            <li class="nav-item">
+                <a class="nav-link " href="logout.php">Sign-out</a>
+            </li>
+    </ul>
     <h3 class="text-center">Available Slots</h3>
     <form  action method="post">
       <div class="mb-3">

@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hotel Booking System Sighup</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hotel Booking System Sighup</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-<div class="container-fluid header">
-        <h1>REGISTRATION</h1>
-    </div>
-    <div class="container body-container">
+  <div class="container-fluid header">
+    <h1>REGISTRATION</h1>
+  </div>
+  <div class="container body-container">
     <div class="row">
       <div class="col-md-6 offset-md-3">
         <div class="signup-form">
@@ -21,8 +23,8 @@
           <form action="" method="POST">
 
             <div class="form-group">
-              <label for="name">Name</label>
-              <input type="text" id="name" name="name" placeholder="Enter your name">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" placeholder="Enter your email">
             </div>
 
             <div class="form-group">
@@ -37,4 +39,5 @@
     </div>
   </div>
 </body>
+
 </html>

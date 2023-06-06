@@ -1,3 +1,7 @@
+<?php
+session_start();
+?>
+
 <!DOCTYPE html>
 <html>
 
@@ -20,18 +24,18 @@
       <div class="col-md-6 offset-md-3">
         <div class="signup-form">
 
-          <form action="" method="POST">
+          <form action="auth.php" method="POST">
 
             <div class="form-group">
-              <label for="name">Name</label>
-              <input type="text" id="name" name="name" placeholder="Enter your name">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" placeholder="Enter your email">
             </div>
 
             <div class="form-group">
               <label for="password">Password</label>
               <input type="password" id="password" name="password" placeholder="Enter your password">
             </div>
-            <button type="submit">Signup</button><br>
+            <button type="submit">login</button><br>
             <p>Don't have an account? <a href="signup.php"> Register</a></p>
           </form>
         </div>
