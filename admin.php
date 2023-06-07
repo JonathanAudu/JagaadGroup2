@@ -26,6 +26,16 @@ function addDataTojson(string $fileName, array $data,string $key):void{
   }
 }
 
+function removeDataFromjson(string $fileName, string $key){
+  if(is_writable($fileName)){
+    $slots =json_decode(file_get_contents($fileName),true);
+    unset($slots[$key]);
+    if(!file_put_contents($fileName, json_encode($slots))){
+      echo "Cannot write to the file!";
+  }
+  }
+}
+
 if(isset($_POST)){
   if(isset($_POST["add_slot"])&& $_POST["add_slot"]==1){
     $array=readFromJson("data.json");
@@ -35,6 +45,7 @@ if(isset($_POST)){
    "slot_name"=>$_POST["slot_name"],
    "slot_desc"=>$_POST["slot_desc"],
    "slot_date"=>$_POST["slot_date"],
+   "booked"=>false
  ];
  if(!empty($_POST["slot_name"])&&!empty($_POST["slot_desc"])&&!empty($_POST["slot_date"]))
  addDataTojson("data.json",$slot,"slot_$slot_id");
