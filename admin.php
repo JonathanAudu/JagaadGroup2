@@ -1,46 +1,13 @@
 <?php 
 
-
+print_r($_POST);
 session_start();
 
 if(!isset($_SESSION['userLoggedIn'])){
     echo '<meta http-equiv="refresh" content="0; url=\'login.php\'" />';
 }
 
-
-function  readFromJson(string $fileName):array{
-  $slots=[];
-  if (file_exists($fileName)) {
-    $json = file_get_contents($fileName);
-    $slots = json_decode($json, true);
-}
-return $slots;
-}
-function addDataTojson(string $fileName, array $data,string $key):void{
-  if(is_writable($fileName)){
-    $slots =json_decode(file_get_contents($fileName),true);
-    $slots[$key]=$data;
-    if(!file_put_contents($fileName, json_encode($slots))){
-      echo "Cannot write to the file!";
-  }
-  }
-}
-
-if(isset($_POST)){
-  if(isset($_POST["add_slot"])&& $_POST["add_slot"]==1){
-    $array=readFromJson("data.json");
-    $slot_id=count($array)?explode('_',end($array)["slot_id"])[1]+1: 1;
- $slot=[
-   "slot_id"=>"slot_".$slot_id,
-   "slot_name"=>$_POST["slot_name"],
-   "slot_desc"=>$_POST["slot_desc"],
-   "slot_date"=>$_POST["slot_date"],
- ];
- if(!empty($_POST["slot_name"])&&!empty($_POST["slot_desc"])&&!empty($_POST["slot_date"]))
- addDataTojson("data.json",$slot,"slot_$slot_id");
-
-}
-}
+require_once "backend/app.php";
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -100,27 +67,68 @@ if(isset($_POST)){
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td>Slot 1</td>
-        <td>Slot 1 description goes here.</td>
-        <td>dd/mm/yy</td>
+      <?php foreach($slots as $slot){ 
+        if($slot['booked']){
+        ?>
+        <tr>
+        <td><?php echo $slot['slot_name']?></td>
+        <td><?php echo $slot['slot_desc']?></td>
+        <td><?php echo $slot['slot_date']?></td>
         <td class="action-buttons">
-          <button class="btn btn-danger delete-btn">Delete </button>
-          <button class="btn btn-primary update-btn"> Update</button>
+          <form action method="post">
+          <button class="btn btn-danger delete-btn" name="delete_slot" value="<?php echo  $slot['slot_id'] ?>">Delete </button>
+          </form>
+          <button class="btn btn-primary update-btn" value="<?php echo('#'.str_replace(' ','-',$slot['slot_id'])); ?>" data-bs-toggle='modal' data-bs-target='<?php echo('#'.str_replace(' ','-',$slot['slot_id'])); ?>'> Update</button>
         </td>
       </tr>
-      <tr>
-        <td>Slot 2</td>
-        <td>Slot 2 description goes here.</td>
-        <td>dd/mm/yy</td>
-        <td class="action-buttons">
-          <button class="btn btn-danger delete-btn">Delete </button>
-          <button class="btn btn-primary update-btn"> Update</button>
-        </td>
-      </tr>
+        <?php
+        }}?>
     </tbody>
   </table>
   </div>
+  <?php  foreach($slots as $slot){
+    if($slot['booked']){
+    ?>
+<!-- Modal -->
+<div class="modal fade" id=<?php echo(str_replace(' ','-',$slot["slot_id"]))?> tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<form action method="post" >
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 text-center" id="exampleModalLabel">Update Slot</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+    <div class="mb-2">
+     <label for='exampleFormControlInput1' class='form-label'>Slot Name</label>
+  <input type='text' name="updated_name_<?php echo $slot["slot_id"] ?>" value="<?php echo htmlspecialchars($slot["slot_name"])?>" class='form-control' id='exampleFormControlInput1' >
+
+</div>
+<div class="mb-2">
+     <label for='exampleFormControlInput1' class='form-label'>Slot description</label>
+  <input type='text' name="updated_desc_<?php echo $slot["slot_id"] ?>" value="<?php echo htmlspecialchars($slot["slot_desc"])?>" class='form-control' id='exampleFormControlInput1' >
+
+</div>
+
+<div class="mb-3">
+        <label for="date">Available Date:</label>
+        <input type="date" id="date" name="updated_date_<?php echo $slot["slot_id"] ?>" class="form-control" value="<?php echo htmlspecialchars($slot["slot_date"])?>">
+      </div>
+<div class="form-check">
+  <input class="form-check-input" type="checkbox" name="updated_booked_<?php echo $slot["slot_id"] ?>" value="true" id="flexCheckChecked"  <?php  echo $slot["booked"]? "checked" : " "; ?> >
+  <label class="form-check-label" for="flexCheckChecked">
+  Booked
+  </label>
+</div>
+
+<button type="submit" name="update_slot" value="<?php echo $slot["slot_id"] ?>" class="btn btn-primary">Update Slot</button>
+
+      </div>
+    </div>
+  </div>
+  </form>
+</div>
+<?php }} ?>
  
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>

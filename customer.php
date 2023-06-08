@@ -1,13 +1,6 @@
 <?php
-function  readFromJson(string $fileName):array{
-    $slots=[];
-    if (file_exists($fileName)) {
-      $json = file_get_contents($fileName);
-      $slots = json_decode($json, true);
-  }
-  return $slots;
-  }
-  $slots=readFromJson("data.json");
+require_once "backend/app.php";
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -32,12 +25,12 @@ function  readFromJson(string $fileName):array{
 
         <div class="slots-container">
             <?php  foreach($slots as $slot ){?>
-                <form action="">
-            <div class="slot">
+                <form action="" method="post">
+            <div class="<?php echo $slot['booked'] ?'slot-booked' :'slot' ?>">
                 <h3><?php echo $slot["slot_name"]?></h3>
                 <p><?php echo $slot["slot_desc"]?></p>
                 <p>Avalaible till : <?php echo $slot["slot_date"]?></p>
-                <button type="submit" name="book-slot" class="btn btn-primary book-btn">Book a Slot</button>
+                <button type="submit" name="book_slot" value="<?php echo $slot["slot_id"] ?>" class="btn btn-primary book-btn">Book a Slot</button>
             </div>
             </form>
             <?php }?>
