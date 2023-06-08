@@ -24,7 +24,7 @@ session_start();
       <div class="col-md-6 offset-md-3">
         <div class="signup-form">
 
-          <form action="auth.php" method="POST">
+          <form action="backend/auth.php" method="POST">
 
             <div class="form-group">
               <label for="email">Email</label>
