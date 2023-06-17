@@ -9,7 +9,9 @@ if(isset($_POST)){
 
     // Generate a new slot_id based on the existing data
     $slot_id = count($array) ? explode('_', end($array)["slot_id"])[1] + 1 : 1;
-
+    
+    //uplaoding images
+     print_r( $_FILES["fileToUpload"]["tmp_name"]);
     // Create a new slot with the provided details
     $slot = [
       "slot_id" => "slot_".$slot_id,
