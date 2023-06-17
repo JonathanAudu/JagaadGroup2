@@ -37,7 +37,7 @@ require_once "backend/app.php";
       </li>
     </ul>
     <h3 class="text-center">Available Slots</h3>
-    <form action="" method="post">
+    <form action="" method="post" enctype="multipart/form-data">
       <div class="mb-3">
         <label for="name" class="form-label">Slot Name</label>
         <input type="text" class="form-control" name="slot_name" id="name" required>
@@ -50,6 +50,11 @@ require_once "backend/app.php";
         <label for="date">Available Date:</label>
         <input type="date" id="date" name="slot_date" class="form-control" required>
       </div>
+      <div class="mb-3">
+        <label for="date"> Select image to upload:</label>
+        <input type="file" name="fileToUpload" id="fileToUpload" required>
+      </div>
+      
       <button type="submit" name="add_slot" value="1" class="btn btn-primary">Add Slot</button>
     </form>
   </div>

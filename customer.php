@@ -41,6 +41,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_slot'])) {
             <?php foreach ($slots as $slot) { ?>
                 <form action="" method="post">
                     <div class="<?php echo $slot['booked'] ? 'slot-booked' : 'slot' ?>">
+                    <div class="stack-1">
+   <img src="https://img-fotki.yandex.ru/get/6836/11092394.0/0_168fcf_d5f873f8_X5L">
+</div>
                         <h3><?php echo $slot["slot_name"] ?></h3>
                         <p><?php echo $slot["slot_desc"] ?></p>
                         <p>Available till: <?php echo $slot["slot_date"] ?></p>
@@ -54,7 +57,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_slot'])) {
             <?php } ?>
 
             <!-- Add more slots here as needed -->
+
         </div>
+       
     </div>
 
     <!-- Bootstrap JS -->

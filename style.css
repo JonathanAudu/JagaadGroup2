@@ -138,3 +138,20 @@ th {
   border: none;
   border-radius: 5px;
 }
+
+div[class*="stack-"] {
+  float: left;
+  position: relative;
+  margin: 30px;
+  margin-left: 60px;
+ 
+}
+
+div[class^="stack-"],
+div[class^="stack-"]:before,
+div[class^="stack-"]:after {
+  border: 6px solid #fff;
+  height: 200px;
+  width: 200px;
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+}
