@@ -1,20 +1,78 @@
 <?php
-require_once "backend/app.php";
+session_start();
 
-// Check if the form is submitted and a slot is being booked
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_slot'])) {
-    $slotId = $_POST['book_slot'];
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "hotel-booking";
 
-    // Update the booked status of the slot in the $slots array
-    foreach ($slots as &$slot) {
-        if ($slot['slot_id'] === $slotId) {
-            $slot['booked'] = true;
-            break;
-        }
+$conn = new mysqli($servername, $username, $password, $dbname);
+
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+// Check if the user is logged in
+$loggedIn = isset($_SESSION["user_id"]);
+
+// Fetch slots from the database
+$sql = "SELECT * FROM slots";
+$result = $conn->query($sql);
+$slots = [];
+if ($result && $result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $slots[] = $row;
     }
 }
 
+// Update expired slots
+$updateExpiredSql = "UPDATE slots SET expired = 1 WHERE checkout < CURDATE()";
+$conn->query($updateExpiredSql);
+
+// Handle form submission
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["book_slot"])) {
+    // Retrieve user email from the session
+    $userEmail = $_SESSION["email"] ?? null;
+    if (!$userEmail) {
+        $errorMessage = "YOU HAVE TO LOGIN TO BOOK A ROOM.";
+    } else {
+        $slotId = $_POST["slot_id"];
+
+        // Check if the slot is already booked
+        $checkBookedSql = "SELECT booked FROM slots WHERE id = ?";
+        $checkBookedStmt = $conn->prepare($checkBookedSql);
+        $checkBookedStmt->bind_param("i", $slotId);
+        $checkBookedStmt->execute();
+        $checkBookedStmt->bind_result($booked);
+        $checkBookedStmt->fetch();
+        $checkBookedStmt->close();
+
+        if ($booked) {
+            $errorMessage = "Slot is already booked.";
+        } else {
+            $checkin = $_POST['checkin'];
+            $checkout = $_POST['checkout'];
+
+            // Update the slot with booked status and user email
+            $updateSql = "UPDATE slots SET booked = 1, booked_user = ?, checkin = ?, checkout = ?, updated_at = NOW() WHERE id = ?";
+            $stmt = $conn->prepare($updateSql);
+            $stmt->bind_param("sssi", $userEmail, $checkin, $checkout, $slotId);
+
+            if ($stmt->execute()) {
+                $successMessage = "Slot booked successfully!";
+                echo '<meta http-equiv="refresh" content="0; url=\'customer.php\'" />';
+            } else {
+                $errorMessage = "Error booking slot: " . $stmt->error;
+            }
+
+            $stmt->close();
+        }
+    }
+}
+// Close the database connection
+$conn->close();
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -26,42 +84,79 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_slot'])) {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
-   
+
 </head>
 
 <body>
-    <div class="container-fluid header">
-        <h1>HOTEL BOOKING SYSTEM</h1>
-    </div>
+<div class="container-fluid header">
+    <h1>HOTEL BOOKING SYSTEM</h1>
+    <?php if ($loggedIn): ?>
+        <p>Welcome, <?php echo $_SESSION["email"]; ?>!</p>
+        <p class="btn btn-danger" ><a href="logout.php" class="text-light">Logout</a></p>
+    <?php else: ?>
+        <p class="btn btn-success" ><a href="login.php"  class="text-light" >Login</a></p>
+    <?php endif; ?>
+</div>
 
-    <div class="container body-container">
-        <h2 class="text-center">Available Slots</h2>
+<div class="container body-container">
+    <h2 class="text-center">Available Slots</h2>
+    <?php if (isset($successMessage)): ?>
+        <div class="alert alert-success text-center"><?php echo $successMessage; ?></div>
+    <?php endif; ?>
+    <?php if (isset($errorMessage)): ?>
+        <div class="alert alert-danger text-center"><?php echo $errorMessage; ?></div>
+    <?php endif; ?>
 
-        <div class="slots-container">
-            <?php foreach ($slots as $slot) { ?>
-                <form action="" method="post">
-                    <div class="<?php echo $slot['booked'] ? 'slot-booked' : 'slot' ?>">
-                        <h3><?php echo $slot["slot_name"] ?></h3>
-                        <p><?php echo $slot["slot_desc"] ?></p>
-                        <p>Available till: <?php echo $slot["slot_date"] ?></p>
-                        <?php if (!$slot['booked']) { ?>
-                            <button type="submit" name="book_slot" value="<?php echo $slot["slot_id"] ?>" class="btn btn-primary book-btn">Book a Slot</button>
-                        <?php } else { ?>
-                            <button class="btn btn-danger" disabled>Booked</button>
-                        <?php } ?>
+    <hr>
+    <div class="slots-container">
+        <?php if (empty($slots)): ?>
+            <p>No slots available.</p>
+        <?php else: ?>
+            <?php foreach ($slots as $slot): ?>
+                <div class="slot">
+                    <h3><?php echo $slot["name"] ?></h3>
+                    <p><?php echo $slot["description"] ?></p>
+                    <?php if ($slot["expired"]): ?>
+                    <p class="btn btn-warning">Expired</p>
+                    <?php elseif ($slot["booked"]): ?>
+                        <p class="btn btn-danger">Booked</p>
+                    <?php else: ?>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#bookSlotModal_<?php echo $slot["id"] ?>">Book Slot</button>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Book Slot Modal -->
+                <div class="modal fade" id="bookSlotModal_<?php echo $slot["id"] ?>" tabindex="-1" aria-labelledby="bookSlotModalLabel_<?php echo $slot["id"] ?>" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="bookSlotModalLabel_<?php echo $slot["id"] ?>">Book Slot</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="" method="POST">
+                                    <input type="hidden" name="slot_id" value="<?php echo $slot["id"] ?>">
+                                    <div class="form-group">
+                                        <label for="checkin_<?php echo $slot["id"] ?>">Check-in Date</label>
+                                        <input type="date" id="checkin_<?php echo $slot["id"] ?>" name="checkin" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="checkout_<?php echo $slot["id"] ?>">Check-out Date</label>
+                                        <input type="date" id="checkout_<?php echo $slot["id"] ?>" name="checkout" required>
+                                    </div>
+                                    <button type="submit" name="book_slot" class="btn btn-primary">Book Slot</button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
-                </form>
-            <?php } ?>
-
-            <!-- Add more slots here as needed -->
-        </div>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
     </div>
+</div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Custom JS -->
-    <script src="script.js"></script>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
-
