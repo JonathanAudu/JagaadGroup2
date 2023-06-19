@@ -36,30 +36,38 @@ if ($result && $result->num_rows > 0) {
 
 // Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_slot"])) {
-// Get user input
+    // Get user input
     $name = $_POST["name"] ?? "";
     $description = $_POST["description"] ?? "";
 
-// Validate and sanitize input as needed
+    // Handle file upload
+    $image = $_FILES["image"];
+    $imagePath = "uploads/" . basename($image["name"]);  // Specify the directory where you want to save the images
 
-// Prepare and bind the SQL statement with placeholders
-    $stmt = $conn->prepare("INSERT INTO slots (user_id, name, description) VALUES (?, ?, ?)");
-    $stmt->bind_param("iss", $_SESSION["user_id"], $name, $description);
+    if (move_uploaded_file($image["tmp_name"], $imagePath)) {
+        // File upload successful
+        // Prepare and bind the SQL statement with placeholders
+        $stmt = $conn->prepare("INSERT INTO slots (user_id, name, description, image) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("isss", $_SESSION["user_id"], $name, $description, $imagePath);
 
-// Execute the statement
-    if ($stmt->execute()) {
-        // Slot creation successful
-        echo '<meta http-equiv="refresh" content="0; url=\'admin.php\'" />';
-        $successMessage = "Slot Created Successfully.";
+        // Execute the statement
+        if ($stmt->execute()) {
+            // Slot creation successful
+            echo '<meta http-equiv="refresh" content="0; url=\'admin.php\'" />';
+            $successMessage = "Slot Created Successfully.";
+        } else {
+            // Slot creation failed
+            $errorMessage = "Failed to create slot. Please try again.";
+        }
+
+        // Close the statement
+        $stmt->close();
     } else {
-        // Slot creation failed
-        $errorMessage = "Failed to create slot. Please try again.";
+        // File upload failed
+        $errorMessage = "Failed to upload the image. Please try again.";
     }
-
-
-// Close the statement
-    $stmt->close();
 }
+
 
 // Handle the delete action
 if (isset($_POST["delete_slot"])) {
@@ -145,7 +153,7 @@ $conn->close();
     <?php if (isset($successMessage) && !empty($successMessage)): ?>
         <div class="alert alert-success text-center"><?php echo $successMessage; ?></div>
     <?php endif; ?>
-    <form action="" method="post">
+    <form action="" method="post" enctype="multipart/form-data">
         <div class="mb-3">
             <label for="name" class="form-label">Room Name</label>
             <input type="text" class="form-control" name="name" id="name" required>
@@ -153,6 +161,10 @@ $conn->close();
         <div class="mb-3">
             <label for="description" class="form-label">Room Description</label>
             <input type="text" class="form-control" name="description" id="description" required>
+        </div>
+        <div class="mb-3">
+            <label for="image" class="form-label">Room Image</label>
+            <input type="file" class="form-control" name="image" id="image" accept="image/*" required>
         </div>
         <button type="submit" name="add_slot" class="btn btn-primary">Add Slot</button>
     </form>
@@ -204,12 +216,8 @@ $conn->close();
                             </div>
                             <div class="modal-body">
                                 <div class="mb-2">
-                                    <label for="slotName<?php echo $slot["id"]; ?>" class="form-label">Slot Name</label>
-                                    <input type="text" name="slot_name" value="<?php echo $slot["name"]; ?>" class="form-control" id="slotName<?php echo $slot["id"]; ?>">
-                                </div>
-                                <div class="mb-2">
-                                    <label for="slotDescription<?php echo $slot["id"]; ?>" class="form-label">Slot Description</label>
-                                    <input type="text" name="slot_description" value="<?php echo $slot["description"]; ?>" class="form-control" id="slotDescription<?php echo $slot["id"]; ?>">
+                                    <input type="hidden" name="slot_name" value="<?php echo $slot["name"]; ?>" class="form-control" id="slotName<?php echo $slot["id"]; ?>">
+                                    <input type="hidden" name="slot_description" value="<?php echo $slot["description"]; ?>" class="form-control" id="slotDescription<?php echo $slot["id"]; ?>">
                                 </div>
                                 <div class="mb-3">
                                     <label for="checkIn<?php echo $slot["id"]; ?>" class="form-label">Check-in Date</label>
