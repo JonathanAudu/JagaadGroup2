@@ -1,13 +1,11 @@
 <?php
 session_start();
-//importing controllers from db
-require_once("db/controllers.php");
+
 //connecting to database
 require_once("db/mysql_connect.php");
 
 // Check if the user is logged in
 require_once("auth/auth.php");
-
 
 // Set the session timeout duration (in seconds)
 $sessionTimeout = 7200; // 2 hours
@@ -17,7 +15,14 @@ $_SESSION['LAST_ACTIVITY'] = time();
 
 
 // Fetch slots from the database
-fetchSlots($conn);
+$sql = "SELECT * FROM slots";
+$result = $conn->query($sql);
+$slots = [];
+if ($result && $result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $slots[] = $row;
+    }
+}
 
 // Update expired slots
 $updateExpiredSql = "UPDATE slots SET expired = 1 WHERE checkout < CURDATE()";

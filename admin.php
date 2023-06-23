@@ -4,14 +4,19 @@ session_start();
 require_once("auth/auth.php");
 //connecting to database
 require_once("db/mysql_connect.php");
-//importing controllers from db
-require_once("db/controllers.php");
 
 
 // Initialize variables
 $errorMessage = "";
 // Fetch slots from the database
-fetchSlots($conn);
+$sql = "SELECT * FROM slots";
+$result = $conn->query($sql);
+$slots = [];
+if ($result && $result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $slots[] = $row;
+    }
+}
 
 // Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_slot"])) {
