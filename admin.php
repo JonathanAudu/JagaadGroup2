@@ -1,29 +1,13 @@
 <?php
 session_start();
 // Check if the user is logged in and is an admin
-if (!isset($_SESSION["user_id"]) || !isset($_SESSION["is_admin"]) || $_SESSION["is_admin"] != 1) {
-    // Redirect to login page or appropriate error page
-    header("Location: login.php");
-    exit();
-}
+require_once("auth/auth.php");
+//connecting to database
+require_once("db/mysql_connect.php");
 
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "hotel-booking";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-// Check if the user is logged in
-$loggedIn = isset($_SESSION["user_id"]);
 
 // Initialize variables
 $errorMessage = "";
-
 // Fetch slots from the database
 $sql = "SELECT * FROM slots";
 $result = $conn->query($sql);
@@ -120,7 +104,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["update_slot"])) {
 
 
 // Close the database connection
-$conn->close();
+require_once("db/mysql-close.php")
 ?>
 
 <!DOCTYPE html>

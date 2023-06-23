@@ -1,20 +1,11 @@
 <?php
 session_start();
 
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "hotel-booking";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+//connecting to database
+require_once("db/mysql_connect.php");
 
 // Check if the user is logged in
-$loggedIn = isset($_SESSION["user_id"]);
-$isAdmin = isset($_SESSION["is_admin"]) && $_SESSION["is_admin"] == 1;
+require_once("auth/auth.php");
 
 // Set the session timeout duration (in seconds)
 $sessionTimeout = 7200; // 2 hours
@@ -79,7 +70,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["book_slot"])) {
 }
 
 // Close the database connection
-$conn->close();
+require_once("db/mysql-close.php")
 ?>
 
 

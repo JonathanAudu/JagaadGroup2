@@ -1,14 +1,7 @@
 <?php
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "hotel-booking";
+//connecting to database
+require_once("db/mysql_connect.php");
 
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
 // Initialize variables for error messages
 $emailError = "";
 $passwordError = "";
@@ -52,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 // Close the database connection
-$conn->close();
+require_once("db/mysql-close.php");
 ?>
 <!DOCTYPE html>
 <html>
